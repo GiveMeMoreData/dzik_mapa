@@ -358,7 +358,7 @@ class _RegisterState extends State<Register>{
       "fcm_token": prefs.get('FCM_token'),
     };
 
-    await FirebaseFirestore.instance.collection('users').add(data);
+    await FirebaseFirestore.instance.collection('users').doc(userId).set(data);
   }
 
   void validateAndSubmit() async {
