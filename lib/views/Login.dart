@@ -79,6 +79,12 @@ class _LoginState extends State<Login>{
 
         //add user to database
         await addUserFromGoogle(firebaseUser);
+
+        // Set Preferences
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setBool('notify', false);
+        prefs.setString('location_from', null);
+        prefs.setDouble('observe_radious', 500);
       }
       Navigator.pushReplacementNamed(context, "/Map");
 
@@ -114,19 +120,6 @@ class _LoginState extends State<Login>{
       print('Error: $e');
     }
   }
-  void pushUserToDatabase(String userId) async {
-    Map<String, Object> data = {
-      "name": _name.trim(),
-      "email": _email,
-      "uid": userId,
-      "number": _phoneNumber,
-      "photo_url": _photoUrl,
-    };
-
-    CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
-    usersCollection.add(data);
-  }
-
   void validateAndSubmit() async {
 
     if (validateAndSave()) {
@@ -270,11 +263,16 @@ class _LoginState extends State<Login>{
               ),
 
               SizedBox(height: 10,),
-              Text(
-                  "zarejestruj",
-                style: Theme.of(context).textTheme.headline3.copyWith(
-                    fontSize: 16,
-                    decoration: TextDecoration.underline
+              GestureDetector(
+                onTap: (){
+                  Navigator.of(context).pushNamed(Register.routeName);
+                },
+                child: Text(
+                    "zarejestruj",
+                  style: Theme.of(context).textTheme.headline3.copyWith(
+                      fontSize: 16,
+                      decoration: TextDecoration.underline
+                  ),
                 ),
               ),
               SizedBox(height: 20,),
@@ -307,7 +305,270 @@ class _LoginState extends State<Login>{
       )
     );
   }
+}
+
+
+class Register extends StatefulWidget{
+  static const routeName = "/Login/Register";
+
+  @override
+  State<StatefulWidget> createState() => _RegisterState();
+}
 
 
 
+class _RegisterState extends State<Register>{
+
+  bool _selected = false;
+  final formKey = new GlobalKey<FormState>();
+  String _email;
+  String _password;
+  String _passwordRepeat;
+
+  String _name;
+  String _phoneNumber;
+  String _photoUrl;
+
+
+  bool _passwordMistake = false;
+
+  bool validateAndSave (){
+    final form = formKey.currentState;
+    if(form.validate()){
+      form.save();
+      print("Form is valid");
+      print("Email: $_email");
+      return true;
+    }
+    return false;
+  }
+
+
+  void pushUserToDatabase(String userId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    Map<String, Object> data = {
+      "name": _name.trim(),
+      "email": _email.trim(),
+      "number": _phoneNumber,
+      "photo_url": _photoUrl,
+      "observe_location": null,
+      "observe_radious" : 500,
+      "send_alert": false,
+      "fcm_token": prefs.get('FCM_token'),
+    };
+
+    await FirebaseFirestore.instance.collection('users').add(data);
+  }
+
+  void validateAndSubmit() async {
+
+    if(validateAndSave()){
+      try{
+        // create account and save it in firebase auth
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: _email.trim(), password: _password);
+        User user = FirebaseAuth.instance.currentUser;
+
+        // sends verification email from Firebase template
+        user.sendEmailVerification();
+
+        // adds user to firestore cloud with all provided info
+        pushUserToDatabase(user.uid);
+
+
+        Scaffold.of(formKey.currentContext).showSnackBar(SnackBar(content: Text("Aktywuj konto linkem wysłanym na podany email"),));
+        formKey.currentState.reset();
+
+        // switches screen back to login
+        setState(() {
+          Navigator.of(context).pop();
+        });
+      } catch (e) {
+        switch(e.code) {
+          case'ERROR_EMAIL_ALREADY_IN_USE':
+            print("Error message: ${e.message}");
+            Scaffold.of(formKey.currentContext).showSnackBar(SnackBar(content: Text("Ten email jest już przypisany do istniejącego konta"),));
+
+            break;
+          default:
+            print("Unknown type of error");
+            print('Error: $e');
+        }
+      }
+    }
+  }
+  void setSystemNavBar(BuildContext context){
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Color(0xFFECE5D8),
+    ));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setSystemNavBar(context);
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Container(
+          alignment: Alignment.center,
+          color: Theme.of(context).backgroundColor,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  "res/boar.png",
+                  height: 100,
+                ),
+                SizedBox(height: 40,),
+
+                ///
+                /// Login fields
+                ///
+
+                Container(
+                  width: MediaQuery.of(context).size.width*0.7,
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                        children: <Widget>[
+                          TextFormField(
+                            onChanged: (value){
+                              _name = value;
+                            },
+                            validator: (value) => value.isEmpty? "Proszę wpisać imię i nazwisko": null,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                                filled: true,
+                                hintStyle: TextStyle(color: Colors.grey[800],),
+                                hintText: "imię i nazwisko",
+                                contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                                fillColor: Colors.transparent
+                            ),
+                          ),
+                          Icon(null, size: 20,),
+                          TextFormField(
+                            onChanged: (value){
+                              _email = value;
+                            },
+                            validator: (value) => value.isEmpty? "Proszę wpisać e-mail": null,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                                filled: true,
+                                hintStyle: TextStyle(color: Colors.grey[800],),
+                                hintText: "email",
+                                contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                                fillColor: Colors.transparent
+                            ),
+                          ),
+                          Icon(null, size: 20,),
+                          TextFormField(
+                            obscureText: true,
+                            autocorrect: false,
+                            onChanged: (value){
+                              _password = value;
+                            },
+                            validator: (value) => _password != value? "Proszę wpisać hasło": null,
+                            decoration: InputDecoration(
+                                filled: true,
+                                hintStyle: TextStyle(color: Colors.grey[800]),
+                                hintText: "hasło",
+                                contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                                fillColor: Colors.transparent
+                            ),
+                          ),
+                          Icon(null, size: 20,),
+                          TextFormField(
+                            obscureText: true,
+                            autocorrect: false,
+                            onChanged: (value){
+                              _passwordRepeat = value;
+                            },
+                            validator: (value) => value.isEmpty? "Proszę powtórzyć hasło": null,
+                            decoration: InputDecoration(
+                                filled: true,
+                                hintStyle: TextStyle(color: Colors.grey[800]),
+                                hintText: "powtórz hasło",
+                                contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                                fillColor: Colors.transparent
+                            ),
+                          ),
+                          Icon(null, size: 20,),
+                          TextFormField(
+                            autocorrect: false,
+                            onChanged: (value){
+                              _phoneNumber = value;
+                            },
+                            validator: (value) => value.isEmpty? "Proszę wpisać numer telefonu": null,
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(
+                                filled: true,
+                                hintStyle: TextStyle(color: Colors.grey[800]),
+                                hintText: "numer telefonu",
+                                contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                                fillColor: Colors.transparent
+                            ),
+                          ),
+                        ]
+                    ),
+                  ),
+                ),
+                SizedBox(height: 60,),
+
+                ///
+                /// Login button
+                ///
+
+                Material(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                  child: InkWell(
+                    splashColor: Theme.of(context).backgroundColor ,
+                    highlightColor: Colors.transparent,
+                    borderRadius: BorderRadius.circular(100),
+                    onTap: validateAndSubmit,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width*0.6,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(
+                            width: 3,
+                            color: Colors.white
+                        ),
+                        color: Colors.transparent,
+
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                        child: Center(
+                          child: Text(
+                            "Zarejestruj",
+                            style: Theme.of(context).textTheme.headline1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 10,),
+                GestureDetector(
+                  onTap: Navigator.of(context).pop,
+                  child: Text(
+                    "zaloguj",
+                    style: Theme.of(context).textTheme.headline3.copyWith(
+                        fontSize: 16,
+                        decoration: TextDecoration.underline
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+    );
+  }
 }

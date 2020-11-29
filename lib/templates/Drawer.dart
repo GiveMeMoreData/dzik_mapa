@@ -68,7 +68,7 @@ class CustomDrawer extends StatelessWidget{
           GestureDetector(
             onTap: (){
               Navigator.of(context).popUntil((route) => Navigator.of(context).canPop());
-              Navigator.of(context).pushReplacementNamed(Profile.routeName);
+              Navigator.of(context).pushNamed(Profile.routeName);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -144,7 +144,7 @@ class CustomDrawer extends StatelessWidget{
           GestureDetector(
             onTap: (){
               Navigator.of(context).popUntil((route) => Navigator.of(context).canPop());
-              Navigator.of(context).pushReplacementNamed(HistoryMap.routeName);
+              Navigator.of(context).pushNamed(HistoryMap.routeName);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -181,7 +181,7 @@ class CustomDrawer extends StatelessWidget{
           GestureDetector(
             onTap: (){
               Navigator.of(context).popUntil((route) => Navigator.of(context).canPop());
-              Navigator.of(context).pushReplacementNamed(MyReports.routeName);
+              Navigator.of(context).pushNamed(MyReports.routeName);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),

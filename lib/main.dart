@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
         "/Map" : (context) => MainMap(),
         "/History" : (context) => HistoryMap(),
         "/Login" : (context) => Login(),
+        "/Login/Register" : (context) => Register(),
         "/SplashScreen" : (context) => SplashScreen(),
         "/Report" : (context) => Report(),
         "/Report/Location" : (context) => ReportLocation(),
