@@ -1,16 +1,16 @@
-# dzik_mapa
+# Dzik Mapa :boar::boar::boar:
 
-A new Flutter application.
+Demo of an app created during **HackYeah 2020** hackaton.
 
-## Getting Started
+ - .apk file [here]() 
+ - Adobe XD [project](https://xd.adobe.com/view/d970f990-3023-47ec-8e6f-1a33d260d517-8c23/?fullscreen)
 
-This project is a starting point for a Flutter application.
+## What does it do?
 
-A few resources to get you started if this is your first Flutter project:
+**Short version.** This app allows you to view reports fo wild boar sightings on a map and allows you to send them as well. Database is updated by users only.  
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+**Longer version** //TODO
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Installation
+
+If you own device with android I recomend you to download this [.apk]() file on your phone and then simply install it. Keep in mind that this is a demo some features may not work as intended or may not work at all.
