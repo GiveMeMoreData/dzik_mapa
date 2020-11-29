@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "599371167248",
+    "firebase_url": "https://boarmap.firebaseio.com",
+    "project_id": "boarmap",
+    "storage_bucket": "boarmap.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599371167248:android:360590baff22de8ae77c95",
+        "android_client_info": {
+          "package_name": "com.company.dzik_mapa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599371167248-2immn75ghkfc0g3g36lr1bb99kkfotu4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.dzik_mapa",
+            "certificate_hash": "51a27705be6e3ad669dd28d0d3e01bf5772dc5c2"
+          }
+        },
+        {
+          "client_id": "599371167248-fh0lr0h3i5eachsfvdqjgog324d8e4ta.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6hbNqSnnvnDxeKojy_B50uyLd8CStoyw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599371167248-fh0lr0h3i5eachsfvdqjgog324d8e4ta.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
